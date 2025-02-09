@@ -38,6 +38,13 @@
             android:text="仅选中的图片" />
     </RadioGroup>
 
+    <TextView
+        android:id="@+id/ocr_result"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="" />
+
     <Button
         android:id="@+id/ocr_start"
         android:layout_width="wrap_content"

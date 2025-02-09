@@ -3,9 +3,7 @@ package org.fossify.gallery.activities
 import android.os.Bundle
 import android.widget.Button
 import android.widget.ProgressBar
-import android.widget.RadioButton
-import android.widget.RadioGroup
-import android.widget.TextView
+import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import kotlinx.coroutines.*
 import org.fossify.gallery.R
@@ -21,6 +19,7 @@ class OcrActivity : AppCompatActivity() {
     private lateinit var mOcrAllRadioButton: RadioButton
     private lateinit var mOcrSelectedRadioButton: RadioButton
     private lateinit var mStartButton: Button
+    private lateinit var mResultTextView: TextView
     private lateinit var mMediums: List<Medium>
     private lateinit var mMediumDao: MediumDao
     private lateinit var mOcrHelper: OcrHelper
@@ -35,6 +34,7 @@ class OcrActivity : AppCompatActivity() {
         mOcrAllRadioButton = findViewById(R.id.ocr_all)
         mOcrSelectedRadioButton = findViewById(R.id.ocr_selected)
         mStartButton = findViewById(R.id.ocr_start)
+        mResultTextView = findViewById(R.id.ocr_result)
 
         mMediumDao = GalleryDatabase.getInstance(applicationContext).MediumDao()
         mOcrHelper = OcrHelper(applicationContext)
@@ -61,7 +61,13 @@ class OcrActivity : AppCompatActivity() {
             val total = mMediums.size
             var processed = 0
 
-            for (medium in mMediums) {
+            val mediums = if (scope == "all") {
+                mMediums
+            } else {
+                mMediums.filter { it.isFavorite } // 假设 isFavorite 表示选中
+            }
+
+            for (medium in mediums) {
                 if (medium.caption.isNullOrEmpty()) {
                     try {
                         withContext(Dispatchers.Main) {
@@ -71,6 +77,9 @@ class OcrActivity : AppCompatActivity() {
                         val text = mOcrHelper.recognizeText(bitmap)
                         medium.caption = text
                         mMediumDao.update(medium)
+                        withContext(Dispatchers.Main) {
+                            mResultTextView.text = text
+                        }
                     } catch (e: Exception) {
                         withContext(Dispatchers.Main) {
                             mStatusTextView.text = "识别失败：${medium.name}"

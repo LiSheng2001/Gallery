@@ -10,8 +10,7 @@ import android.provider.MediaStore
 import android.provider.MediaStore.Images
 import android.provider.MediaStore.Video
 import android.view.ViewGroup
-import android.widget.RelativeLayout
-import android.widget.Toast
+import android.widget.*
 import androidx.recyclerview.widget.RecyclerView
 import org.fossify.commons.dialogs.CreateNewFolderDialog
 import org.fossify.commons.dialogs.FilePickerDialog
@@ -86,6 +85,7 @@ import org.fossify.gallery.dialogs.ChangeSortingDialog
 import org.fossify.gallery.dialogs.ChangeViewTypeDialog
 import org.fossify.gallery.dialogs.FilterMediaDialog
 import org.fossify.gallery.dialogs.GrantAllFilesDialog
+import org.fossify.gallery.activities.OcrActivity
 import org.fossify.gallery.extensions.addTempFolderIfNeeded
 import org.fossify.gallery.extensions.config
 import org.fossify.gallery.extensions.createDirectoryFromMedia
@@ -261,6 +261,11 @@ class MainActivity : SimpleActivity(), DirectoryOperationsListener {
 
         binding.directoriesSwitchSearching.setOnClickListener {
             launchSearchActivity()
+        }
+
+        binding.ocrButton.setOnClickListener {
+            val intent = Intent(this, OcrActivity::class.java)
+            startActivity(intent)
         }
 
         // just request the permission, tryLoadGallery will then trigger in onResume
