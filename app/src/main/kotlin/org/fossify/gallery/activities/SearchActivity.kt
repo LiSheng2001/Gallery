@@ -24,9 +24,11 @@ import org.fossify.gallery.interfaces.MediaOperationsListener
 import org.fossify.gallery.models.Medium
 import org.fossify.gallery.models.ThumbnailItem
 import java.io.File
+import org.fossify.gallery.databases.GalleryDatabase
 
 class SearchActivity : SimpleActivity(), MediaOperationsListener {
     private var mLastSearchedText = ""
+    private lateinit var mMediumDao: MediumDao
 
     private var mCurrAsyncTask: GetMediaAsynctask? = null
     private var mAllMedia = ArrayList<ThumbnailItem>()
@@ -40,6 +42,7 @@ class SearchActivity : SimpleActivity(), MediaOperationsListener {
         setupOptionsMenu()
         updateMaterialActivityViews(binding.searchCoordinator, binding.searchGrid, useTransparentNavigation = true, useTopSearchMenu = true)
         binding.searchEmptyTextPlaceholder.setTextColor(getProperTextColor())
+        mMediumDao = GalleryDatabase.getInstance(applicationContext).MediumDao()
         getAllMedia()
         binding.searchFastscroller.updateColors(getProperPrimaryColor())
     }
@@ -92,7 +95,10 @@ class SearchActivity : SimpleActivity(), MediaOperationsListener {
     private fun textChanged(text: String) {
         ensureBackgroundThread {
             try {
-                val filtered = mAllMedia.filter { it is Medium && it.name.contains(text, true) } as ArrayList
+                val regex = text.replace("*", ".*").replace("?", ".").toRegex(RegexOption.IGNORE_CASE)
+                val filtered = mAllMedia.filter {
+                    it is Medium && (it.name.matches(regex) || (it.caption != null && it.caption.matches(regex)))
+                } as ArrayList<ThumbnailItem>
                 filtered.sortBy { it is Medium && !it.name.startsWith(text, true) }
                 val grouped = MediaFetcher(applicationContext).groupMedia(filtered as ArrayList<Medium>, "")
                 runOnUiThread {
