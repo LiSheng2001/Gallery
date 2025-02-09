@@ -97,7 +97,7 @@ class SearchActivity : SimpleActivity(), MediaOperationsListener {
             try {
                 val regex = text.replace("*", ".*").replace("?", ".").toRegex(RegexOption.IGNORE_CASE)
                 val filtered = mAllMedia.filter {
-                    it is Medium && (it.name.matches(regex) || (it.caption != null && it.caption.matches(regex)))
+                    it is Medium && (it.name.contains(text, true) || (it.caption?.contains(text, true) == true))
                 } as ArrayList<ThumbnailItem>
                 filtered.sortBy { it is Medium && !it.name.startsWith(text, true) }
                 val grouped = MediaFetcher(applicationContext).groupMedia(filtered as ArrayList<Medium>, "")

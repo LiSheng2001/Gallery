@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <TextView
+        android:id="@+id/ocr_status"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="准备就绪" />
+
+    <ProgressBar
+        android:id="@+id/ocr_progress"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:max="100" />
+
+    <RadioGroup
+        android:id="@+id/ocr_scope"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <RadioButton
+            android:id="@+id/ocr_all"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="所有图片"
+            android:checked="true" />
+
+        <RadioButton
+            android:id="@+id/ocr_selected"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="仅选中的图片" />
+    </RadioGroup>
+
+    <Button
+        android:id="@+id/ocr_start"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="开始识别" />
+
+</LinearLayout>

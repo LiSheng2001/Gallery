@@ -53,6 +53,14 @@
             android:textSize="@dimen/bigger_text_size"
             android:visibility="gone" />
 
+        <Button
+            android:id="@+id/ocr_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/directories_empty_placeholder_2"
+            android:layout_centerHorizontal="true"
+            android:text="OCR识别" />
+
         <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
             android:id="@+id/directories_refresh_layout"
             android:layout_width="match_parent"
