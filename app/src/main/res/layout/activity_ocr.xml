@@ -1,70 +1,95 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/settings_coordinator"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="16dp">
+    android:layout_height="match_parent">
 
-    <TextView
-        android:id="@+id/ocr_status"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="准备就绪" />
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/settings_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/color_primary"
+        app:title="@string/settings"
+        app:titleTextAppearance="@style/AppTheme.ActionBar.TitleTextStyle" />
 
-    <ProgressBar
-        android:id="@+id/ocr_progress"
-        style="?android:attr/progressBarStyleHorizontal"
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/settings_nested_scrollview"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:max="100" />
+        android:layout_marginTop="?attr/actionBarSize"
+        android:fillViewport="true"
+        android:scrollbars="none">
 
-    <RadioGroup
-        android:id="@+id/ocr_scope"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
+        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:padding="16dp">
 
-        <RadioButton
-            android:id="@+id/ocr_all"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="所有图片"
-            android:checked="true" />
+            <TextView
+                android:id="@+id/ocr_status"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="准备就绪" />
 
-        <RadioButton
-            android:id="@+id/ocr_selected"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="仅选中的图片" />
-    </RadioGroup>
+            <ProgressBar
+                android:id="@+id/ocr_progress"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:max="100" />
 
-    <TextView
-        android:id="@+id/ocr_result"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:text="" />
+            <RadioGroup
+                android:id="@+id/ocr_scope"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
 
-    <Button
-        android:id="@+id/ocr_start"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="开始识别" />
+                <RadioButton
+                    android:id="@+id/ocr_all"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="所有图片"
+                    android:checked="true" />
 
-    <Button
-        android:id="@+id/ocr_cancel"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="取消识别"
-        android:visibility="gone"/>
+                <RadioButton
+                    android:id="@+id/ocr_selected"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="仅选中的图片" />
+            </RadioGroup>
 
-    <EditText
-        android:id="@+id/ocr_caption"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:hint="请输入字幕"
-        android:inputType="textMultiLine"
-        android:minLines="3" />
+            <TextView
+                android:id="@+id/ocr_result"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="" />
 
-</LinearLayout>
+            <Button
+                android:id="@+id/ocr_start"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="开始识别" />
+
+            <Button
+                android:id="@+id/ocr_cancel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="取消识别"
+                android:visibility="gone"/>
+
+            <EditText
+                android:id="@+id/ocr_caption"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:hint="请输入字幕"
+                android:inputType="textMultiLine"
+                android:minLines="3" />
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

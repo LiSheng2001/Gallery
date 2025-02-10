@@ -2,6 +2,7 @@ package org.fossify.gallery.interfaces
 
 import androidx.room.*
 import org.fossify.gallery.models.Medium
+import org.fossify.gallery.helpers.TYPE_IMAGES
 
 @Dao
 interface MediumDao {
@@ -52,4 +53,15 @@ interface MediumDao {
 
     @Query("DELETE FROM media WHERE deleted_ts != 0")
     fun clearRecycleBin()
+
+    @Query("""
+    SELECT filename, full_path, parent_path, last_modified, date_taken, size, type, video_duration, is_favorite, deleted_ts, media_store_id, caption 
+    FROM media 
+    WHERE type = :imageType AND deleted_ts = 0 
+    ORDER BY date_taken DESC, last_modified DESC
+    """)
+    fun getAllImages(imageType: Int = TYPE_IMAGES): List<Medium>
+
+    @Query("UPDATE media SET caption = :newCaption WHERE full_path = :path COLLATE NOCASE")
+    fun updateCaption(path: String, newCaption: String)
 }
