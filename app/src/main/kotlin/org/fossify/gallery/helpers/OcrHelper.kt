@@ -3,7 +3,7 @@ package org.fossify.gallery.helpers
 import android.content.Context
 import android.graphics.Bitmap
 import com.google.mlkit.vision.text.TextRecognition
-import com.google.mlkit.vision.text.latin.TextRecognizerOptions
+import com.google.mlkit.vision.text.chinese.ChineseTextRecognizerOptions
 import com.google.mlkit.vision.common.InputImage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -17,7 +17,7 @@ class OcrHelper(private val context: Context) {
             return@withContext ""
         }
 
-        val recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
+        val recognizer = TextRecognition.getClient(ChineseTextRecognizerOptions.Builder().build())
         val image = InputImage.fromBitmap(bitmap, 0)
 
         return@withContext suspendCoroutine { continuation ->

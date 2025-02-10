@@ -26,12 +26,13 @@ data class Medium(
     @ColumnInfo(name = "is_favorite") var isFavorite: Boolean,
     @ColumnInfo(name = "deleted_ts") var deletedTS: Long,
     @ColumnInfo(name = "media_store_id") var mediaStoreId: Long,
-    @ColumnInfo(name = "caption") var caption: String,
+    // 我加了一行
+    @ColumnInfo(name = "caption") var caption: String = "",
 
     @Ignore var gridPosition: Int = 0   // used at grid view decoration at Grouping enabled
 ) : Serializable, ThumbnailItem() {
 
-    constructor() : this(null, "", "", "", 0L, 0L, 0L, 0, 0, false, 0L, 0L, 0)
+    constructor() : this(null, "", "", "", 0L, 0L, 0L, 0, 0, false, 0L, 0L, "")
 
     companion object {
         private const val serialVersionUID = -6553149366975655L
@@ -111,10 +112,11 @@ data class Medium(
 
     fun toFileDirItem() = FileDirItem(path, name, false, 0, size, modified, mediaStoreId)
 
-    suspend fun extractText(context: Context) {
-        val ocrHelper = OcrHelper(context)
-        // Load bitmap here, replace with actual bitmap loading logic
-        val bitmap = context.getBitmapFromPath(path)
-        caption = ocrHelper.recognizeText(bitmap)
-    }
+    // 有错误
+    // suspend fun extractText(context: Context) {
+    //     val ocrHelper = OcrHelper(context)
+    //     // Load bitmap here, replace with actual bitmap loading logic
+    //     val bitmap = context.getBitmapFromPath(path)
+    //     caption = ocrHelper.recognizeText(bitmap)
+    // }
 }

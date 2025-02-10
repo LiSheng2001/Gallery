@@ -25,6 +25,8 @@ import org.fossify.gallery.models.Medium
 import org.fossify.gallery.models.ThumbnailItem
 import java.io.File
 import org.fossify.gallery.databases.GalleryDatabase
+// 引入MediumDao
+import org.fossify.gallery.interfaces.*
 
 class SearchActivity : SimpleActivity(), MediaOperationsListener {
     private var mLastSearchedText = ""
