@@ -85,7 +85,7 @@ import org.fossify.gallery.dialogs.ChangeSortingDialog
 import org.fossify.gallery.dialogs.ChangeViewTypeDialog
 import org.fossify.gallery.dialogs.FilterMediaDialog
 import org.fossify.gallery.dialogs.GrantAllFilesDialog
-import org.fossify.gallery.activities.OcrActivity
+// import org.fossify.gallery.activities.OcrActivity
 import org.fossify.gallery.extensions.addTempFolderIfNeeded
 import org.fossify.gallery.extensions.config
 import org.fossify.gallery.extensions.createDirectoryFromMedia
@@ -263,10 +263,11 @@ class MainActivity : SimpleActivity(), DirectoryOperationsListener {
             launchSearchActivity()
         }
 
-        binding.ocrButton.setOnClickListener {
-            val intent = Intent(this, OcrActivity::class.java)
-            startActivity(intent)
-        }
+        // 绑定监听器按钮
+        // binding.ocrButton.setOnClickListener {
+        //     val intent = Intent(this, OcrActivity::class.java)
+        //     startActivity(intent)
+        // }
 
         // just request the permission, tryLoadGallery will then trigger in onResume
         handleMediaPermissions()
