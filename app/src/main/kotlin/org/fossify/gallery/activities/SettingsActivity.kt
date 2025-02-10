@@ -54,6 +54,8 @@ class SettingsActivity : SimpleActivity() {
         setupUseEnglish()
         setupLanguage()
         setupChangeDateTimeFormat()
+        // 自动OCR跳转
+        setupShowAutoOCR()
         setupFileLoadingPriority()
         setupManageIncludedFolders()
         setupManageExcludedFolders()
@@ -1097,6 +1099,14 @@ class SettingsActivity : SimpleActivity() {
         toast(if (configValues.size > 0) org.fossify.commons.R.string.settings_imported_successfully else org.fossify.commons.R.string.no_entries_for_importing)
         runOnUiThread {
             setupSettingItems()
+        }
+    }
+
+    private fun setupShowAutoOCR() {
+        // 绑定自动OCR界面跳转
+        binding.settingsOcrHolder.setOnClickListener {
+            val intent = Intent(this, OcrActivity::class.java)
+            startActivity(intent)
         }
     }
 }

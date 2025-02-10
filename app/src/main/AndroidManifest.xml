@@ -267,6 +267,9 @@
             </intent-filter>
         </activity>
 
+        <!-- 注册OCR页面-->
+        <activity android:name=".activities.OcrActivity" />
+
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.provider"
