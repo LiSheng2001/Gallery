@@ -6,12 +6,16 @@ import android.view.ViewGroup
 import android.widget.RelativeLayout
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.fossify.commons.extensions.*
 import org.fossify.commons.helpers.VIEW_TYPE_GRID
 import org.fossify.commons.helpers.ensureBackgroundThread
 import org.fossify.commons.models.FileDirItem
 import org.fossify.commons.views.MyGridLayoutManager
 import org.fossify.gallery.R
+import org.fossify.commons.R as R2
 import org.fossify.gallery.adapters.MediaAdapter
 import org.fossify.gallery.asynctasks.GetMediaAsynctask
 import org.fossify.gallery.databinding.ActivitySearchBinding
@@ -95,9 +99,8 @@ class SearchActivity : SimpleActivity(), MediaOperationsListener {
     }
 
     private fun textChanged(text: String) {
-        ensureBackgroundThread {
+         ensureBackgroundThread {
             try {
-                val regex = text.replace("*", ".*").replace("?", ".").toRegex(RegexOption.IGNORE_CASE)
                 val filtered = mAllMedia.filter {
                     it is Medium && (it.name.contains(text, true) || (it.caption?.contains(text, true) == true))
                 } as ArrayList<ThumbnailItem>

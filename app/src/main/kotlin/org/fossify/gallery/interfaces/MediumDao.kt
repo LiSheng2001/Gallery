@@ -64,4 +64,24 @@ interface MediumDao {
 
     @Query("UPDATE media SET caption = :newCaption WHERE full_path = :path COLLATE NOCASE")
     fun updateCaption(path: String, newCaption: String)
+
+    // 批量更新caption，使用@Transaction优化更新效率
+    @Transaction
+    fun updateCaptions(captionUpdates: List<Pair<String, String>>) {
+        captionUpdates.forEach { (path, newCaption) ->
+            updateCaption(path, newCaption)
+        }
+    }
+
+    // 查询关键词，并优先展示更近时间的相片
+    // 请写出表达式
+    @Query("""
+    SELECT filename, full_path, parent_path, last_modified, date_taken, size, type, video_duration, is_favorite, deleted_ts, media_store_id, caption
+    FROM media
+    WHERE deleted_ts = 0 
+      AND (filename LIKE '%' || :keyword || '%' COLLATE NOCASE 
+           OR caption LIKE '%' || :keyword || '%' COLLATE NOCASE)
+    ORDER BY date_taken DESC, last_modified DESC
+    """)
+    fun getTargetImages(keyword: String): List<Medium>
 }

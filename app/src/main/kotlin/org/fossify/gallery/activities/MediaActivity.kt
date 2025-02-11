@@ -15,6 +15,10 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.bumptech.glide.request.target.SimpleTarget
 import com.bumptech.glide.request.transition.Transition
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.fossify.commons.dialogs.CreateNewFolderDialog
 import org.fossify.commons.dialogs.RadioGroupDialog
 import org.fossify.commons.extensions.*
@@ -32,6 +36,7 @@ import org.fossify.gallery.dialogs.*
 import org.fossify.gallery.extensions.*
 import org.fossify.gallery.helpers.*
 import org.fossify.gallery.interfaces.MediaOperationsListener
+import org.fossify.gallery.interfaces.MediumDao
 import org.fossify.gallery.models.Medium
 import org.fossify.gallery.models.ThumbnailItem
 import org.fossify.gallery.models.ThumbnailSection
@@ -58,6 +63,9 @@ class MediaActivity : SimpleActivity(), MediaOperationsListener {
     private var mTempShowHiddenHandler = Handler()
     private var mCurrAsyncTask: GetMediaAsynctask? = null
     private var mZoomListener: MyRecyclerView.MyZoomListener? = null
+
+    // 查询数据库
+    private lateinit var mMediumDao: MediumDao
 
     private var mStoredAnimateGifs = true
     private var mStoredCropThumbnails = true
@@ -110,6 +118,9 @@ class MediaActivity : SimpleActivity(), MediaOperationsListener {
         }
 
         updateWidgets()
+
+        // 初始化数据库查询
+        mMediumDao = GalleryDatabase.getInstance(applicationContext).MediumDao()
     }
 
     override fun onStart() {
@@ -350,11 +361,30 @@ class MediaActivity : SimpleActivity(), MediaOperationsListener {
     }
 
     private fun searchQueryChanged(text: String) {
-        ensureBackgroundThread {
+        // ensureBackgroundThread {
+        CoroutineScope(Dispatchers.Main).launch {
             try {
-                val filtered = mMedia.filter { it is Medium && it.name.contains(text, true) } as ArrayList
-                filtered.sortBy { it is Medium && !it.name.startsWith(text, true) }
-                val grouped = MediaFetcher(applicationContext).groupMedia(filtered as ArrayList<Medium>, mPath)
+                // 因为caption只影响搜索，因此我不希望侵入式地修改Fetch类的函数
+                // 在其上额外建立一个数据库查询（同时查caption和filename）把path查询出来，之后转换为集合去增强
+                // 我将委托给数据库进行查询去获得filtered的ArrayList<Medium>对象
+                val filtered: ArrayList<Medium>
+
+                if(text.isEmpty()){
+                    filtered = mMedia.filter { it is Medium && (it.name.contains(text, true) || (it.caption?.contains(text, true) == true)) } as ArrayList<Medium>
+                    filtered.sortBy { it is Medium && !it.name.startsWith(text, true) }
+                }else{
+                    // 走数据库查询
+                    filtered = withContext(Dispatchers.IO) {
+                        mMediumDao.getTargetImages(text) as ArrayList<Medium>
+                    }
+                }
+
+                val c = withContext(Dispatchers.IO) {
+                    mMediumDao.getAllImages()
+                }
+                c
+
+                val grouped = MediaFetcher(applicationContext).groupMedia(filtered, mPath)
                 runOnUiThread {
                     if (grouped.isEmpty()) {
                         binding.mediaEmptyTextPlaceholder.text = getString(org.fossify.commons.R.string.no_items_found)
