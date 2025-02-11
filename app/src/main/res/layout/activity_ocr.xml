@@ -22,11 +22,6 @@
         android:fillViewport="true"
         android:scrollbars="none">
 
-<!--        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="match_parent"-->
-<!--            android:orientation="vertical"-->
-<!--            android:padding="16dp">-->
         <LinearLayout
             android:id="@+id/auto_ocr_holder"
             android:layout_width="match_parent"
@@ -34,17 +29,10 @@
             android:orientation="vertical">
 
             <TextView
-                android:id="@+id/ocr_status"
+                android:id="@+id/auto_ocr_desc"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="准备就绪" />
-
-            <ProgressBar
-                android:id="@+id/ocr_progress"
-                style="?android:attr/progressBarStyleHorizontal"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:max="100" />
+                android:text="通过谷歌的ML Kit插件在本地对图库中的图像执行自动OCR" />
 
             <RadioGroup
                 android:id="@+id/ocr_scope"
@@ -73,27 +61,66 @@
                 android:layout_marginTop="16dp"
                 android:text="" />
 
-            <Button
-                android:id="@+id/ocr_start"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="开始识别" />
-
-            <Button
-                android:id="@+id/ocr_cancel"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="取消识别"
-                android:visibility="gone"/>
-
-            <EditText
-                android:id="@+id/ocr_caption"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:hint="请输入字幕"
-                android:inputType="textMultiLine"
-                android:minLines="3" />
+                android:orientation="horizontal"
+                android:gravity="center_horizontal">
+
+                <Button
+                    android:id="@+id/ocr_start"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="开始识别"
+                    android:layout_marginEnd="8dp"/>
+
+                <Button
+                    android:id="@+id/ocr_cancel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="取消识别"
+                    android:visibility="visible" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="处理进度："
+                    android:textSize="16sp"
+                    android:layout_marginEnd="8dp"/>
+
+                <com.google.android.material.progressindicator.LinearProgressIndicator
+                    android:id="@+id/ocr_progress"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:indeterminate="false"
+                    android:max="100"
+                    android:progress="0"
+                    app:trackCornerRadius="4dp" />
+            </LinearLayout>
+
+
+            <TextView
+                android:id="@+id/ocr_status"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="准备就绪" />
+
+<!--            <EditText-->
+<!--                android:id="@+id/ocr_caption"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_marginTop="16dp"-->
+<!--                android:hint="请输入字幕"-->
+<!--                android:inputType="textMultiLine"-->
+<!--                android:minLines="3" />-->
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
