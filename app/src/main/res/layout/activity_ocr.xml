@@ -28,8 +28,9 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <TextView
+            <org.fossify.commons.views.MyTextView
                 android:id="@+id/auto_ocr_desc"
+                style="@style/SettingsTextLabelStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="通过谷歌的ML Kit插件在本地对图库中的图像执行自动OCR" />
@@ -38,28 +39,33 @@
                 android:id="@+id/ocr_scope"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:paddingStart="8dp"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
                 android:orientation="vertical">
 
                 <RadioButton
                     android:id="@+id/ocr_all"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_height="48dp"
                     android:text="所有图片"
                     android:checked="true" />
 
                 <RadioButton
                     android:id="@+id/ocr_selected"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="仅选中的图片" />
+                    android:layout_height="48dp"
+                    android:text="仅符合规则的图片" />
             </RadioGroup>
 
-            <TextView
-                android:id="@+id/ocr_result"
+            <EditText
+                android:id="@+id/ocr_rules"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:text="" />
+                android:hint="请输入规则（正则表达式）"
+                android:inputType="textMultiLine"
+                android:minLines="3"
+                android:visibility="gone" /> <!-- 默认隐藏 -->
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -88,7 +94,8 @@
                 android:orientation="horizontal"
                 android:gravity="center_vertical">
 
-                <TextView
+                <org.fossify.commons.views.MyTextView
+                    style="@style/SettingsTextLabelStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="处理进度："
@@ -107,8 +114,9 @@
             </LinearLayout>
 
 
-            <TextView
+            <org.fossify.commons.views.MyTextView
                 android:id="@+id/ocr_status"
+                style="@style/SettingsTextLabelStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="准备就绪" />

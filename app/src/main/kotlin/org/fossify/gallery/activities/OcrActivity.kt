@@ -15,10 +15,25 @@ class OcrActivity : SimpleActivity() {
 
         updateMaterialActivityViews(binding.ocrSettingsCoordinator, binding.autoOcrHolder, useTransparentNavigation = true, useTopSearchMenu = false)
         setupMaterialScrollListener(binding.ocrSettingsNestedScrollview, binding.ocrSettingsToolbar)
+
+        // 添加绑定
+        setupSelectImageRatio()
     }
 
     override fun onResume() {
         super.onResume()
         setupToolbar(binding.ocrSettingsToolbar, NavigationIcon.Arrow)
+    }
+
+
+    private fun setupSelectImageRatio() {
+        // 控制显示正则表达式的输入框
+        binding.ocrScope.setOnCheckedChangeListener{ _, checkedId ->
+            if (checkedId == binding.ocrSelected.id) { // 当选中“仅符合规则的图像”
+                binding.ocrRules.visibility = android.view.View.VISIBLE
+            } else {
+                binding.ocrRules.visibility = android.view.View.GONE
+            }
+        }
     }
 }
