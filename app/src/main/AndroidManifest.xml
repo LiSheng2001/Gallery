@@ -268,7 +268,15 @@
         </activity>
 
         <!-- 注册OCR页面-->
-        <activity android:name=".activities.OcrActivity" />
+        <activity
+            android:name=".activities.OcrActivity"
+            android:exported="true"
+            android:parentActivityName=".activities.SettingsActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.APPLICATION_PREFERENCES" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
 
         <provider
             android:name="androidx.core.content.FileProvider"

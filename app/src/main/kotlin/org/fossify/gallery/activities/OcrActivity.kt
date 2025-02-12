@@ -9,6 +9,7 @@ import org.fossify.gallery.helpers.OcrHelper
 import org.fossify.gallery.interfaces.MediumDao
 import org.fossify.gallery.models.Medium
 import kotlinx.coroutines.*
+import org.fossify.commons.extensions.updateTextColors
 import java.util.Locale
 
 class OcrActivity : SimpleActivity() {
@@ -34,6 +35,8 @@ class OcrActivity : SimpleActivity() {
     override fun onResume() {
         super.onResume()
         setupToolbar(binding.ocrSettingsToolbar, NavigationIcon.Arrow)
+        // 这样即可随主题更换颜色
+        updateTextColors(binding.autoOcrHolder)
     }
 
 

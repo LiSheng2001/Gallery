@@ -121,7 +121,8 @@ class SettingsActivity : SimpleActivity() {
             binding.settingsFileOperationsLabel,
             binding.settingsBottomActionsLabel,
             binding.settingsRecycleBinLabel,
-            binding.settingsMigratingLabel
+            binding.settingsMigratingLabel,
+            binding.settingsAllOcrLabel  // OCR设置的Holder
         ).forEach {
             it.setTextColor(getProperPrimaryColor())
         }

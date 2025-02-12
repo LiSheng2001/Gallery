@@ -33,6 +33,7 @@
                 style="@style/SettingsTextLabelStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
                 android:text="通过谷歌的ML Kit插件在本地对图库中的图像执行自动OCR" />
 
             <RadioGroup
@@ -44,27 +45,27 @@
                 android:paddingBottom="8dp"
                 android:orientation="vertical">
 
-                <RadioButton
+                <org.fossify.commons.views.MyCompatRadioButton
                     android:id="@+id/ocr_all"
                     android:layout_width="wrap_content"
                     android:layout_height="48dp"
                     android:text="所有图片"
                     android:checked="true" />
 
-                <RadioButton
+                <org.fossify.commons.views.MyCompatRadioButton
                     android:id="@+id/ocr_selected"
                     android:layout_width="wrap_content"
                     android:layout_height="48dp"
                     android:text="仅符合规则的图片" />
             </RadioGroup>
 
-            <EditText
+            <org.fossify.commons.views.MyEditText
                 android:id="@+id/ocr_rules"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="请输入规则（正则表达式）"
                 android:inputType="textMultiLine"
-                android:minLines="3"
+                android:minLines="1"
                 android:visibility="gone" /> <!-- 默认隐藏 -->
 
             <LinearLayout
@@ -73,45 +74,53 @@
                 android:orientation="horizontal"
                 android:gravity="center_horizontal">
 
-                <Button
+                <org.fossify.commons.views.MyButton
                     android:id="@+id/ocr_start"
+                    style="@style/ColoredButtonStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="开始识别"
-                    android:layout_marginEnd="8dp"/>
+                    android:layout_marginEnd="15dp"/>
 
-                <Button
+                <org.fossify.commons.views.MyButton
                     android:id="@+id/ocr_cancel"
+                    style="@style/ColoredButtonStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="取消识别"
+                    android:layout_marginStart="15dp"
                     android:visibility="visible" />
             </LinearLayout>
 
-            <LinearLayout
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical">
+                android:layout_marginTop="20dp"
+                android:layout_marginBottom="20dp">
 
                 <org.fossify.commons.views.MyTextView
-                    style="@style/SettingsTextLabelStyle"
+                    android:id="@+id/progress_label_textView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="处理进度："
-                    android:textSize="16sp"
-                    android:layout_marginEnd="8dp"/>
+                    android:layout_marginEnd="8dp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"/>
 
-                <com.google.android.material.progressindicator.LinearProgressIndicator
+                <ProgressBar
                     android:id="@+id/ocr_progress"
+                    style="@android:style/Widget.ProgressBar.Horizontal"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:indeterminate="false"
                     android:max="100"
                     android:progress="0"
-                    app:trackCornerRadius="4dp" />
-            </LinearLayout>
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/progress_label_textView"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
 
             <org.fossify.commons.views.MyTextView
@@ -121,14 +130,6 @@
                 android:layout_height="wrap_content"
                 android:text="准备就绪" />
 
-<!--            <EditText-->
-<!--                android:id="@+id/ocr_caption"-->
-<!--                android:layout_width="match_parent"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:layout_marginTop="16dp"-->
-<!--                android:hint="请输入字幕"-->
-<!--                android:inputType="textMultiLine"-->
-<!--                android:minLines="3" />-->
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
