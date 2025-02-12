@@ -71,14 +71,14 @@ class OcrHelper(private val context: Context) {
                 // 并发启动 OCR 任务
                 val deferredList = fullPaths.map { fullPath ->
                     async {
-                        val content = recognizeText(fullPath)
+                        val content = if (!canceled) recognizeText(fullPath) else ""
                         if (content != "") {
                             // 仅发送正确进行OCR识别流程的caption
                             val fileName = File(fullPath).name
                             val caption = Caption(null, fileName, fullPath, "ml_kit_ocr", content)
                             resultQueue.offer(caption)
+                            completed++
                         }
-                        completed++
                         onProgress(completed, total)
                     }
                 }
@@ -130,8 +130,10 @@ class OcrHelper(private val context: Context) {
 
     // ✅ 取消批量 OCR 任务
     fun cancelBatch() {
-        batchJob?.cancel()  // 取消协程
-        batchJob = null
+        // batchJob?.cancel()  // 取消协程
+        // batchJob = null
+        // 使用更软的方式去取消协程
+        canceled = true
     }
 
     // 释放OCR模型
