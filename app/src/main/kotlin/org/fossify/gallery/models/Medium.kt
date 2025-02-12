@@ -26,13 +26,11 @@ data class Medium(
     @ColumnInfo(name = "is_favorite") var isFavorite: Boolean,
     @ColumnInfo(name = "deleted_ts") var deletedTS: Long,
     @ColumnInfo(name = "media_store_id") var mediaStoreId: Long,
-    // 加了一行，设置默认值以进行兼容
-    @ColumnInfo(name = "caption") var caption: String = "",
 
     @Ignore var gridPosition: Int = 0   // used at grid view decoration at Grouping enabled
 ) : Serializable, ThumbnailItem() {
 
-    constructor() : this(null, "", "", "", 0L, 0L, 0L, 0, 0, false, 0L, 0L, "")
+    constructor() : this(null, "", "", "", 0L, 0L, 0L, 0, 0, false, 0L, 0L)
 
     companion object {
         private const val serialVersionUID = -6553149366975655L

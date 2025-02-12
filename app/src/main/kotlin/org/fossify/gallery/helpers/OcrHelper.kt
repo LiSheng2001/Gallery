@@ -66,12 +66,6 @@ class OcrHelper(private val context: Context) {
             var completed = 0
             val batchSize = 20 // 每批次写入数据库的结果数量
 
-            // debug
-            val k = withContext(Dispatchers.IO) {
-                mediaDB.getAllImages()
-            }
-            k
-
             try {
                 // 并发启动 OCR 任务
                 val deferredList = fullPaths.map { fullPath ->
@@ -128,12 +122,6 @@ class OcrHelper(private val context: Context) {
                 // 关闭连接
                 close()
             }
-
-            // debug
-            val c = withContext(Dispatchers.IO) {
-                mediaDB.getAllImages()
-            }
-            c
         }
     }
 

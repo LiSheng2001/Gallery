@@ -9,7 +9,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 import org.fossify.gallery.interfaces.*
 import org.fossify.gallery.models.*
 
-@Database(entities = [Directory::class, Medium::class, Widget::class, DateTaken::class, Favorite::class], version = 11)
+@Database(entities = [Directory::class, Medium::class, Widget::class, DateTaken::class, Favorite::class, Caption::class], version = 11)
 abstract class GalleryDatabase : RoomDatabase() {
 
     abstract fun DirectoryDao(): DirectoryDao
@@ -21,6 +21,8 @@ abstract class GalleryDatabase : RoomDatabase() {
     abstract fun DateTakensDao(): DateTakensDao
 
     abstract fun FavoritesDao(): FavoritesDao
+
+    abstract fun CaptionsDao(): Caption
 
     companion object {
         private var db: GalleryDatabase? = null
@@ -95,7 +97,7 @@ abstract class GalleryDatabase : RoomDatabase() {
 
         private val MIGRATION_10_11 = object : Migration(10, 11) {
             override fun migrate(database: SupportSQLiteDatabase) {
-                database.execSQL("ALTER TABLE media ADD COLUMN caption TEXT default '' NOT NULL")
+                database.execSQL("CREATE TABLE IF NOT EXISTS `captions` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `full_path` TEXT NOT NULL, `filename` TEXT NOT NULL, `type` TEXT NOT NULL, `content` TEXT NOT NULL)")
             }
         }
     }
