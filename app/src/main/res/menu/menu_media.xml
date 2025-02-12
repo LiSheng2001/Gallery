@@ -3,26 +3,18 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:ignore="AppCompatResource">
-    <item
-        android:id="@+id/toggle_filename"
-        android:icon="@drawable/ic_label_vector"
-        android:title="@string/toggle_filename"
-        app:showAsAction="always" />
-    <item
-        android:id="@+id/folder_view"
-        android:icon="@drawable/ic_folders_vector"
-        android:title="@string/folder_view"
-        app:showAsAction="always" />
+    <!--  为了避免搜索菜单溢出为Action影响整洁，设置所有项目都不溢出  -->
+    <!--  并且toggle_filename、folder_view两个项目使用频率较低，选择后置到最后  -->
     <item
         android:id="@+id/sort"
         android:icon="@drawable/ic_sort_vector"
         android:title="@string/sort_by"
-        app:showAsAction="ifRoom" />
+        app:showAsAction="never" />
     <item
         android:id="@+id/filter"
         android:icon="@drawable/ic_filter_vector"
         android:title="@string/filter_media"
-        app:showAsAction="ifRoom" />
+        app:showAsAction="never" />
     <item
         android:id="@+id/change_view_type"
         android:showAsAction="never"
@@ -62,7 +54,7 @@
         android:id="@+id/open_camera"
         android:icon="@drawable/ic_camera_vector"
         android:title="@string/open_camera"
-        app:showAsAction="ifRoom" />
+        app:showAsAction="never" />
     <item
         android:id="@+id/group"
         android:showAsAction="never"
@@ -87,7 +79,7 @@
         android:id="@+id/column_count"
         android:icon="@drawable/ic_column_count_vector"
         android:title="@string/column_count"
-        app:showAsAction="ifRoom" />
+        app:showAsAction="never" />
     <item
         android:id="@+id/slideshow"
         android:showAsAction="never"
@@ -97,10 +89,22 @@
         android:id="@+id/settings"
         android:icon="@drawable/ic_settings_cog_vector"
         android:title="@string/settings"
-        app:showAsAction="ifRoom" />
+        app:showAsAction="never" />
     <item
         android:id="@+id/about"
         android:icon="@drawable/ic_info_vector"
         android:title="@string/about"
-        app:showAsAction="ifRoom" />
+        app:showAsAction="never" />
+    <!--  后置的两个项目  -->
+    <item
+        android:id="@+id/toggle_filename"
+        android:icon="@drawable/ic_label_vector"
+        android:title="@string/toggle_filename"
+
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/folder_view"
+        android:icon="@drawable/ic_folders_vector"
+        android:title="@string/folder_view"
+        app:showAsAction="never" />
 </menu>
