@@ -7,7 +7,6 @@ import org.fossify.commons.helpers.*
 import org.fossify.gallery.databases.GalleryDatabase
 import org.fossify.gallery.helpers.OcrHelper
 import org.fossify.gallery.interfaces.MediumDao
-import org.fossify.gallery.models.Medium
 import kotlinx.coroutines.*
 import org.fossify.commons.extensions.updateTextColors
 import java.util.Locale
@@ -58,17 +57,47 @@ class OcrActivity : SimpleActivity() {
             ocrHelper = OcrHelper(this@OcrActivity)
 
             // 获取数据库中的所有符合要求图像的路径
-            val fullPaths = withContext(Dispatchers.IO) {
-                mediaDB.getAllImagesNotHaveCaption(captionType = "ml_kit_ocr").map { it.path }
+            val fullPaths: List<String> = if (binding.ocrScope.checkedRadioButtonId == binding.ocrAll.id){
+                withContext(Dispatchers.IO) {
+                    mediaDB.getAllImagesNotHaveCaption(captionType = "ml_kit_ocr").map { it.path }
+                }
+            }else{
+                // 获取正则表达式
+                val regexPattern = binding.ocrRules.text.toString()
+                // 检查正则表达式是否合法
+                val regex: Regex = try {
+                    Regex(regexPattern)
+                } catch (e: Exception) {
+                    runOnUiThread {
+                        binding.ocrStatus.text = String.format(Locale.getDefault(), "无效的正则表达式: %s", e.message)
+                    }
+                    return@launch
+                }
+
+                withContext(Dispatchers.IO) {
+                    mediaDB.getAllImagesNotHaveCaption(captionType = "ml_kit_ocr")
+                        .filter { regex.containsMatchIn(it.name) } // 过滤符合正则的文件名
+                        .map { it.path }
+                }
             }
+
+            // 记录开始时间以修正处理速度
+            val startTime = System.currentTimeMillis()
 
             // 运行OCR识别
             ocrHelper?.let { helper ->
                 helper.recognizeBatch(fullPaths,
                     onProgress = { completed, total ->
+                        // 计算实时处理速度
+                        val currentTime = System.currentTimeMillis()
+                        val elapsedTime = (currentTime - startTime) / 1000.0 // 转换为秒，避免除以 0
+
+                        val speed = if (elapsedTime > 0) completed / elapsedTime else 0.0 // 计算每秒处理的图片数
+
                         // 在UI线程更新
                         runOnUiThread {
-                            binding.ocrProgress.setProgress(completed / total)
+                            binding.ocrProgress.setProgress(completed * 100 / total)
+                            binding.ocrStatus.text = String.format(Locale.getDefault(), "已完成: %d / %d，处理速度: %.2f 张/秒", completed, total, speed)
                         }
                     },
                     onComplete = { canceled, completed ->
@@ -92,9 +121,7 @@ class OcrActivity : SimpleActivity() {
 
     private fun setupCancelOCR() {
         binding.ocrCancel.setOnClickListener {
-            ocrHelper?.let { helper ->
-                helper.cancelBatch()
-            }
+            ocrHelper?.cancelBatch()
         }
     }
 }
