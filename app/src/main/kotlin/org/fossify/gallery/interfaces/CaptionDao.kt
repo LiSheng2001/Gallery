@@ -2,7 +2,6 @@ package org.fossify.gallery.interfaces
 
 import org.fossify.gallery.models.Caption
 import androidx.room.*
-import org.fossify.gallery.models.Medium
 
 @Dao
 interface CaptionDao {

@@ -22,7 +22,7 @@ abstract class GalleryDatabase : RoomDatabase() {
 
     abstract fun FavoritesDao(): FavoritesDao
 
-    abstract fun CaptionsDao(): Caption
+    abstract fun CaptionDao(): CaptionDao
 
     companion object {
         private var db: GalleryDatabase? = null

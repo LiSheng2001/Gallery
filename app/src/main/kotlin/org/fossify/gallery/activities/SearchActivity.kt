@@ -102,7 +102,7 @@ class SearchActivity : SimpleActivity(), MediaOperationsListener {
          ensureBackgroundThread {
             try {
                 val filtered = mAllMedia.filter {
-                    it is Medium && (it.name.contains(text, true) || (it.caption?.contains(text, true) == true))
+                    it is Medium && it.name.contains(text, true)
                 } as ArrayList<ThumbnailItem>
                 filtered.sortBy { it is Medium && !it.name.startsWith(text, true) }
                 val grouped = MediaFetcher(applicationContext).groupMedia(filtered as ArrayList<Medium>, "")

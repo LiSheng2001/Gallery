@@ -28,6 +28,7 @@ class OcrActivity : SimpleActivity() {
         // 添加绑定
         setupSelectImageRatio()
         setupStartOCR()
+        setupCancelOCR()
     }
 
     override fun onResume() {
@@ -55,7 +56,7 @@ class OcrActivity : SimpleActivity() {
 
             // 获取数据库中的所有符合要求图像的路径
             val fullPaths = withContext(Dispatchers.IO) {
-                mediaDB.getAllImages().map { it.path }
+                mediaDB.getAllImagesNotHaveCaption(captionType = "ml_kit_ocr").map { it.path }
             }
 
             // 运行OCR识别
@@ -86,7 +87,7 @@ class OcrActivity : SimpleActivity() {
         binding.ocrStart.setOnClickListener { startOCR() }
     }
 
-    private fun setupcancelOCR() {
+    private fun setupCancelOCR() {
         binding.ocrCancel.setOnClickListener {
             ocrHelper?.let { helper ->
                 helper.cancelBatch()

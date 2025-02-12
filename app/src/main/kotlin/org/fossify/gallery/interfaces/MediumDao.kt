@@ -55,33 +55,37 @@ interface MediumDao {
     fun clearRecycleBin()
 
     @Query("""
-    SELECT filename, full_path, parent_path, last_modified, date_taken, size, type, video_duration, is_favorite, deleted_ts, media_store_id, caption 
+    SELECT filename, full_path, parent_path, last_modified, date_taken, size, type, video_duration, is_favorite, deleted_ts, media_store_id
     FROM media 
     WHERE type = :imageType AND deleted_ts = 0 
     ORDER BY date_taken DESC, last_modified DESC
     """)
     fun getAllImages(imageType: Int = TYPE_IMAGES): List<Medium>
 
-    @Query("UPDATE media SET caption = :newCaption WHERE full_path = :path COLLATE NOCASE")
-    fun updateCaption(path: String, newCaption: String)
+    @Query("""
+    SELECT m.filename, m.full_path, m.parent_path, m.last_modified, m.date_taken, 
+        m.size, m.type, m.video_duration, m.is_favorite, m.deleted_ts, m.media_store_id
+    FROM media m
+    WHERE m.type = :imageType AND m.deleted_ts = 0
+    AND NOT EXISTS (
+        SELECT 1 
+        FROM captions c 
+        WHERE c.full_path = m.full_path AND c.type = :captionType
+    )
+    ORDER BY m.date_taken DESC, m.last_modified DESC
+    """)
+    fun getAllImagesNotHaveCaption(imageType: Int = TYPE_IMAGES, captionType: String="ml_kit_ocr"): List<Medium>
 
-    // 批量更新caption，使用@Transaction优化更新效率
-    @Transaction
-    fun updateCaptions(captionUpdates: List<Pair<String, String>>) {
-        captionUpdates.forEach { (path, newCaption) ->
-            updateCaption(path, newCaption)
-        }
-    }
 
     // 查询关键词，并优先展示更近时间的相片
-    // 请写出表达式
     @Query("""
-    SELECT filename, full_path, parent_path, last_modified, date_taken, size, type, video_duration, is_favorite, deleted_ts, media_store_id, caption
-    FROM media
-    WHERE deleted_ts = 0 
-      AND (filename LIKE '%' || :keyword || '%' COLLATE NOCASE 
-           OR caption LIKE '%' || :keyword || '%' COLLATE NOCASE)
-    ORDER BY date_taken DESC, last_modified DESC
+    SELECT m.filename, m.full_path, m.parent_path, m.last_modified, m.date_taken, 
+            m.size, m.type, m.video_duration, m.is_favorite, m.deleted_ts, m.media_store_id
+    FROM media m
+    INNER JOIN captions c ON m.full_path = c.full_path
+    WHERE (c.filename LIKE '%' || :keyword || '%' OR c.content LIKE '%' || :keyword || '%')
+    AND m.deleted_ts = 0
+    ORDER BY m.date_taken DESC, m.last_modified DESC
     """)
     fun getTargetImages(keyword: String): List<Medium>
 }

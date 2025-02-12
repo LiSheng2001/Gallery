@@ -13,8 +13,9 @@ import kotlinx.coroutines.*
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 import java.util.concurrent.ConcurrentLinkedQueue
-import org.fossify.gallery.interfaces.MediumDao
 import org.fossify.gallery.databases.GalleryDatabase
+import org.fossify.gallery.interfaces.CaptionDao
+import org.fossify.gallery.models.Caption
 
 class OcrHelper(private val context: Context) {
     // 单独初始化recognizer避免重复初始化
@@ -24,10 +25,10 @@ class OcrHelper(private val context: Context) {
     private var canceled: Boolean = false
 
     // 缓存 OCR 结果的线程安全队列，格式是[[fullPath_1, caption_1], ..., [fullPath_n, caption_n]]
-    private val resultQueue = ConcurrentLinkedQueue<Pair<String, String>>()
+    private val resultQueue = ConcurrentLinkedQueue<Caption>()
 
     // 管理数据库
-    private val mediaDB: MediumDao = GalleryDatabase.getInstance(context).MediumDao()
+    private val captionDB: CaptionDao = GalleryDatabase.getInstance(context).CaptionDao()
 
 
     suspend fun recognizeText(fullPath: String): String = withContext(Dispatchers.IO) {
@@ -70,10 +71,12 @@ class OcrHelper(private val context: Context) {
                 // 并发启动 OCR 任务
                 val deferredList = fullPaths.map { fullPath ->
                     async {
-                        val caption = recognizeText(fullPath)
-                        if (caption != "") {
-                            // 仅发送正确识别的caption
-                            resultQueue.offer(fullPath to caption)
+                        val content = recognizeText(fullPath)
+                        if (content != "") {
+                            // 仅发送正确进行OCR识别流程的caption
+                            val fileName = File(fullPath).name
+                            val caption = Caption(null, fileName, fullPath, "ml_kit_ocr", content)
+                            resultQueue.offer(caption)
                         }
                         completed++
                         onProgress(completed, total)
@@ -89,14 +92,14 @@ class OcrHelper(private val context: Context) {
 
                     // 如果队列中结果数量达到阈值，批量写入数据库
                     if (resultQueue.size >= batchSize) {
-                        val batchResults = mutableListOf<Pair<String, String>>()
+                        val batchResults = mutableListOf<Caption>()
                         repeat(batchSize) {
                             resultQueue.poll()?.let { batchResults.add(it) }
                         }
 
                         // 批量写入
                         withContext(Dispatchers.IO) {
-                            mediaDB.updateCaptions(batchResults)
+                            captionDB.insertAll(batchResults)
                         }
                     }
 
@@ -106,13 +109,13 @@ class OcrHelper(private val context: Context) {
                 canceled = true
             } finally {
                 // 处理剩余未写入的结果
-                val remainingResults = mutableListOf<Pair<String, String>>()
+                val remainingResults = mutableListOf<Caption>()
                 while (resultQueue.isNotEmpty()) {
                     resultQueue.poll()?.let { remainingResults.add(it) }
                 }
                 if (remainingResults.isNotEmpty()) {
                     withContext(Dispatchers.IO) {
-                        mediaDB.updateCaptions(remainingResults)
+                        captionDB.insertAll(remainingResults)
                     }
                 }
 
@@ -138,7 +141,7 @@ class OcrHelper(private val context: Context) {
     }
 
     // 获取结果队列 (如果需要)
-    fun getResultQueue(): ConcurrentLinkedQueue<Pair<String, String>> {
+    fun getResultQueue(): ConcurrentLinkedQueue<Caption> {
         return resultQueue
     }
 }

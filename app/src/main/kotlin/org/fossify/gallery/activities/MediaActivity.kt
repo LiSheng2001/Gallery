@@ -370,7 +370,7 @@ class MediaActivity : SimpleActivity(), MediaOperationsListener {
                 val filtered: ArrayList<Medium>
 
                 if(text.isEmpty()){
-                    filtered = mMedia.filter { it is Medium && (it.name.contains(text, true) || (it.caption?.contains(text, true) == true)) } as ArrayList<Medium>
+                    filtered = mMedia.filter { it is Medium && it.name.contains(text, true) } as ArrayList<Medium>
                     filtered.sortBy { it is Medium && !it.name.startsWith(text, true) }
                 }else{
                     // 走数据库查询
@@ -378,11 +378,6 @@ class MediaActivity : SimpleActivity(), MediaOperationsListener {
                         mMediumDao.getTargetImages(text) as ArrayList<Medium>
                     }
                 }
-
-                val c = withContext(Dispatchers.IO) {
-                    mMediumDao.getAllImages()
-                }
-                c
 
                 val grouped = MediaFetcher(applicationContext).groupMedia(filtered, mPath)
                 runOnUiThread {
