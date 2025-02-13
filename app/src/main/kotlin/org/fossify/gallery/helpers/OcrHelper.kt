@@ -16,6 +16,8 @@ import java.util.concurrent.ConcurrentLinkedQueue
 import org.fossify.gallery.databases.GalleryDatabase
 import org.fossify.gallery.interfaces.CaptionDao
 import org.fossify.gallery.models.Caption
+import kotlinx.coroutines.sync.Semaphore
+import kotlinx.coroutines.sync.withPermit
 
 class OcrHelper(private val context: Context) {
     // 单独初始化recognizer避免重复初始化
@@ -23,6 +25,8 @@ class OcrHelper(private val context: Context) {
     // 用于控制批量任务中断
     private var batchJob: Job? = null
     private var canceled: Boolean = false
+    val maxConcurrency = 3  // 最大并发数
+    val semaphore = Semaphore(maxConcurrency)
 
     // 缓存 OCR 结果的线程安全队列，格式是[[fullPath_1, caption_1], ..., [fullPath_n, caption_n]]
     private val resultQueue = ConcurrentLinkedQueue<Caption>()
@@ -71,15 +75,19 @@ class OcrHelper(private val context: Context) {
                 // 并发启动 OCR 任务
                 val deferredList = fullPaths.map { fullPath ->
                     async {
-                        val content = if (!canceled) recognizeText(fullPath) else ""
-                        if (content != "") {
-                            // 仅发送正确进行OCR识别流程的caption
-                            val fileName = File(fullPath).name
-                            val caption = Caption(null, fileName, fullPath, "ml_kit_ocr", content)
-                            resultQueue.offer(caption)
-                            completed++
+                        semaphore.withPermit {
+                            // 使用信号量+软退出机制应该能比较及时地响应取消事件了
+                            if(canceled) return@async  // 后续任务直接退出
+                            val content = recognizeText(fullPath)
+                            if (content != "") {
+                                // 仅发送正确进行OCR识别流程的caption
+                                val fileName = File(fullPath).name
+                                val caption = Caption(null, fileName, fullPath, "ml_kit_ocr", content)
+                                resultQueue.offer(caption)
+                                completed++
+                            }
+                            onProgress(completed, total)
                         }
-                        onProgress(completed, total)
                     }
                 }
 
@@ -130,9 +138,7 @@ class OcrHelper(private val context: Context) {
 
     // ✅ 取消批量 OCR 任务
     fun cancelBatch() {
-        // batchJob?.cancel()  // 取消协程
-        // batchJob = null
-        // 使用更软的方式去取消协程
+        // 使用更软的方式去取消协程，减少意外情况
         canceled = true
     }
 
