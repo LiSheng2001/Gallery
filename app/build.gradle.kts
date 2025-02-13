@@ -57,6 +57,11 @@ android {
             if (keystorePropertiesFile.exists()) {
                 signingConfig = signingConfigs.getByName("release")
             }
+
+            // 针对自己的情况，release只保留arm64-v8a以节约空间
+            ndk {
+                abiFilters.add("arm64-v8a")
+            }
         }
     }
 
@@ -140,18 +145,6 @@ dependencies {
     implementation(libs.bundles.room)
     ksp(libs.androidx.room.compiler)
 
-    // To recognize Latin script
-    // implementation("com.google.mlkit:text-recognition:16.0.1")
-
     // To recognize Chinese script
     implementation("com.google.mlkit:text-recognition-chinese:16.0.1")
-
-    // // To recognize Devanagari script
-    // implementation("com.google.mlkit:text-recognition-devanagari:16.0.1")
-
-    // // To recognize Japanese script
-    // implementation("com.google.mlkit:text-recognition-japanese:16.0.1")
-
-    // // To recognize Korean script
-    // implementation("com.google.mlkit:text-recognition-korean:16.0.1")
 }
