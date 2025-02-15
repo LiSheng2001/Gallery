@@ -81,6 +81,7 @@ class MediaActivity : SimpleActivity(), MediaOperationsListener {
 
     companion object {
         var mMedia = ArrayList<ThumbnailItem>()
+        var mFiltered = ArrayList<Medium>()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -95,7 +96,15 @@ class MediaActivity : SimpleActivity(), MediaOperationsListener {
             mAllowPickingMultiple = getBooleanExtra(Intent.EXTRA_ALLOW_MULTIPLE, false)
         }
 
-        binding.mediaRefreshLayout.setOnRefreshListener { getMedia() }
+        binding.mediaRefreshLayout.setOnRefreshListener {
+            // 禁用下拉刷新整个页面
+            // getMedia()
+            runOnUiThread {
+                binding.loadingIndicator.hide()
+                binding.mediaRefreshLayout.isRefreshing = false
+                setupAdapter()
+            }
+        }
         try {
             mPath = intent.getStringExtra(DIRECTORY) ?: ""
         } catch (e: Exception) {
@@ -367,19 +376,19 @@ class MediaActivity : SimpleActivity(), MediaOperationsListener {
                 // 因为caption只影响搜索，因此我不希望侵入式地修改Fetch类的函数
                 // 在其上额外建立一个数据库查询（同时查caption和filename）把path查询出来，之后转换为集合去增强
                 // 我将委托给数据库进行查询去获得filtered的ArrayList<Medium>对象
-                val filtered: ArrayList<Medium>
-
+                //                val filtered: ArrayList<Medium>
+                // 拷贝mFiltered对象以供搜索后的滑动视图使用
                 if(text.isEmpty()){
-                    filtered = mMedia.filter { it is Medium && it.name.contains(text, true) } as ArrayList<Medium>
-                    filtered.sortBy { it is Medium && !it.name.startsWith(text, true) }
+                    mFiltered = mMedia.filter { it is Medium && it.name.contains(text, true) } as ArrayList<Medium>
+                    mFiltered.sortBy { it is Medium && !it.name.startsWith(text, true) }
                 }else{
                     // 走数据库查询
-                    filtered = withContext(Dispatchers.IO) {
+                    mFiltered = withContext(Dispatchers.IO) {
                         mMediumDao.getTargetImages(text) as ArrayList<Medium>
                     }
                 }
 
-                val grouped = MediaFetcher(applicationContext).groupMedia(filtered, mPath)
+                val grouped = MediaFetcher(applicationContext).groupMedia(mFiltered, mPath)
                 runOnUiThread {
                     if (grouped.isEmpty()) {
                         binding.mediaEmptyTextPlaceholder.text = getString(org.fossify.commons.R.string.no_items_found)
@@ -407,6 +416,7 @@ class MediaActivity : SimpleActivity(), MediaOperationsListener {
                 else -> getHumanizedFilename(mPath)
             }
 
+            // 似乎判断是否在搜索界面只需要判断mShowAll是否为false
             val searchHint = if (mShowAll) {
                 getString(org.fossify.commons.R.string.search_files)
             } else {
@@ -489,9 +499,11 @@ class MediaActivity : SimpleActivity(), MediaOperationsListener {
                 if (mLatestMediaId != mediaId || mLatestMediaDateId != mediaDateId) {
                     mLatestMediaId = mediaId
                     mLatestMediaDateId = mediaDateId
-                    runOnUiThread {
-                        getMedia()
-                    }
+                    // runOnUiThread {
+                    //     getMedia()
+                    // }
+                    // 不在UI线程中运行
+                    getMedia()
                 } else {
                     checkLastMediaChanged()
                 }
@@ -878,6 +890,10 @@ class MediaActivity : SimpleActivity(), MediaOperationsListener {
                     putExtra(SHOW_FAVORITES, mPath == FAVORITES)
                     putExtra(SHOW_RECYCLE_BIN, mPath == RECYCLE_BIN)
                     putExtra(IS_FROM_GALLERY, true)
+
+                    // 标识是否位于搜索模式
+                    putExtra(IS_IN_SEARCH_MODE, mLastSearchedText.isNotEmpty())
+
                     startActivity(this)
                 }
             }

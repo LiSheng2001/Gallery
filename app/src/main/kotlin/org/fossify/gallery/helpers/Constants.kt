@@ -266,3 +266,6 @@ fun getPermissionsToRequest(): Collection<Int> {
 
     return permissions
 }
+
+// 标识搜索的结果
+const val IS_IN_SEARCH_MODE = "is_in_search_mode"

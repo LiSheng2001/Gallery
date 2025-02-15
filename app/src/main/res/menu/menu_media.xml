@@ -3,8 +3,13 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:ignore="AppCompatResource">
-    <!--  为了避免搜索菜单溢出为Action影响整洁，设置所有项目都不溢出  -->
-    <!--  并且toggle_filename、folder_view两个项目使用频率较低，选择后置到最后  -->
+    <!--  为了避免搜索菜单溢出为Action影响整洁，将低频的显示文件名隐藏  -->
+    <item
+        android:id="@+id/folder_view"
+        android:icon="@drawable/ic_folders_vector"
+        android:title="@string/folder_view"
+        app:showAsAction="always" />
+
     <item
         android:id="@+id/sort"
         android:icon="@drawable/ic_sort_vector"
@@ -95,16 +100,12 @@
         android:icon="@drawable/ic_info_vector"
         android:title="@string/about"
         app:showAsAction="never" />
-    <!--  后置的两个项目  -->
+    <!--  隐藏项目  -->
     <item
         android:id="@+id/toggle_filename"
         android:icon="@drawable/ic_label_vector"
         android:title="@string/toggle_filename"
+        android:visible="false"
+        app:showAsAction="never" />
 
-        app:showAsAction="never" />
-    <item
-        android:id="@+id/folder_view"
-        android:icon="@drawable/ic_folders_vector"
-        android:title="@string/folder_view"
-        app:showAsAction="never" />
 </menu>

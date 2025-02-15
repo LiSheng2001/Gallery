@@ -95,7 +95,12 @@ class ViewPagerActivity : SimpleActivity(), ViewPager.OnPageChangeListener, View
         window.decorView.setBackgroundColor(getProperBackgroundColor())
         binding.topShadow.layoutParams.height = statusBarHeight + actionBarHeight
         checkNotchSupport()
-        (MediaActivity.mMedia.clone() as ArrayList<ThumbnailItem>).filterIsInstanceTo(mMediaFiles, Medium::class.java)
+        if(intent.getBooleanExtra(IS_IN_SEARCH_MODE, false)){
+            mMediaFiles = MediaActivity.mFiltered
+        }else{
+            (MediaActivity.mMedia.clone() as ArrayList<ThumbnailItem>).filterIsInstanceTo(mMediaFiles, Medium::class.java)
+        }
+
 
         requestMediaPermissions {
             initViewPager(
@@ -384,7 +389,8 @@ class ViewPagerActivity : SimpleActivity(), ViewPager.OnPageChangeListener, View
             gotMedia(mMediaFiles as ArrayList<ThumbnailItem>, refetchViewPagerPosition = true)
         }
 
-        refreshViewPager(true)
+        // 不能理解这里为什么还要刷新一次
+        // refreshViewPager(true)
         binding.viewPager.offscreenPageLimit = 2
 
         if (config.blackBackground) {
@@ -510,6 +516,7 @@ class ViewPagerActivity : SimpleActivity(), ViewPager.OnPageChangeListener, View
     }
 
     private fun goToNextMedium(forward: Boolean) {
+        // 在搜索逻辑似乎可以写在这里
         val oldPosition = binding.viewPager.currentItem
         val newPosition = if (forward) oldPosition + 1 else oldPosition - 1
         if (newPosition == -1 || newPosition > binding.viewPager.adapter!!.count - 1) {
