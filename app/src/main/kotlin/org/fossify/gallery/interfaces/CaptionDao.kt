@@ -14,6 +14,9 @@ interface CaptionDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertAll(captions: List<Caption>)
 
+    @Query("SELECT * FROM captions")
+    fun getAll(): List<Caption>
+
     @Delete
     fun deleteCaption(vararg caption: Caption)
 }

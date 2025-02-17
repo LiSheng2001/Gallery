@@ -70,6 +70,9 @@ val Context.favoritesDB: FavoritesDao get() = GalleryDatabase.getInstance(applic
 
 val Context.dateTakensDB: DateTakensDao get() = GalleryDatabase.getInstance(applicationContext).DateTakensDao()
 
+// CaptionDB
+val Context.captionDB: CaptionDao get() = GalleryDatabase.getInstance(applicationContext).CaptionDao()
+
 val Context.recycleBin: File get() = filesDir
 
 fun Context.movePinnedDirectoriesToFront(dirs: ArrayList<Directory>): ArrayList<Directory> {

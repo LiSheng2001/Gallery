@@ -1,6 +1,7 @@
 package org.fossify.gallery.activities
 
 import android.os.Bundle
+import androidx.lifecycle.lifecycleScope
 import org.fossify.commons.extensions.viewBinding
 import org.fossify.gallery.databinding.ActivityOcrBinding
 import org.fossify.commons.helpers.*
@@ -38,6 +39,11 @@ class OcrActivity : SimpleActivity() {
         updateTextColors(binding.autoOcrHolder)
     }
 
+    override fun onDestroy() {
+        // 尝试取消协程
+        ocrHelper?.cancelBatch()
+        super.onDestroy()
+    }
 
     private fun setupSelectImageRatio() {
         // 控制显示正则表达式的输入框
@@ -52,7 +58,7 @@ class OcrActivity : SimpleActivity() {
 
     private fun startOCR() {
         // 启动一个协程在后台执行 OCR
-        ocrJob = CoroutineScope(Dispatchers.Main).launch { // 在 Main 线程启动协程
+        ocrJob = lifecycleScope.launch {
             // 初始化OCR识别实例
             ocrHelper = OcrHelper(this@OcrActivity)
 

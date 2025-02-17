@@ -294,6 +294,10 @@ class MediaActivity : SimpleActivity(), MediaOperationsListener {
             findItem(R.id.column_count).isVisible = viewType == VIEW_TYPE_GRID
             findItem(R.id.toggle_filename).isVisible = viewType == VIEW_TYPE_GRID
         }
+
+        // 隐藏显示文件名选项
+        val toggleFilenameItem = binding.mediaMenu.getToolbar().menu.findItem(R.id.toggle_filename)
+        toggleFilenameItem.isVisible = false
     }
 
     private fun setupOptionsMenu() {

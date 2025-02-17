@@ -1040,6 +1040,37 @@
 
             </RelativeLayout>
 
+            <!--      导入、导出字幕      -->
+            <RelativeLayout
+                android:id="@+id/settings_export_captions_holder"
+                style="@style/SettingsHolderTextViewOneLinerStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <org.fossify.commons.views.MyTextView
+                    android:id="@+id/settings_export_captions"
+                    style="@style/SettingsTextLabelStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="导出字幕" />
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/settings_import_captions_holder"
+                style="@style/SettingsHolderTextViewOneLinerStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <org.fossify.commons.views.MyTextView
+                    android:id="@+id/settings_import_captions"
+                    style="@style/SettingsTextLabelStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="导入字幕" />
+
+            </RelativeLayout>
+
             <RelativeLayout
                 android:id="@+id/settings_export_holder"
                 style="@style/SettingsHolderTextViewOneLinerStyle"

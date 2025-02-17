@@ -3,11 +3,18 @@ package org.fossify.gallery.activities
 import android.app.Activity
 import android.content.ActivityNotFoundException
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
+import android.provider.DocumentsContract
 import android.text.TextUtils
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.lifecycle.lifecycleScope
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.fossify.commons.dialogs.*
 import org.fossify.commons.extensions.*
 import org.fossify.commons.helpers.*
@@ -33,6 +40,15 @@ class SettingsActivity : SimpleActivity() {
 
     private var mRecycleBinContentSize = 0L
     private val binding by viewBinding(ActivitySettingsBinding::inflate)
+
+    // 使用更现代化的Activity Result API
+    private val exportCaptionsFolderLauncher = registerForActivityResult(ActivityResultContracts.OpenDocumentTree()) { uri ->
+        uri?.let { handleCaptionsExport(it) }
+    }
+
+    private val importCaptionsFileLauncher = registerForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
+        uri?.let { handleCaptionsImport(it) }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         isMaterialActivity = true
@@ -107,6 +123,8 @@ class SettingsActivity : SimpleActivity() {
         setupImportFavorites()
         setupExportSettings()
         setupImportSettings()
+        setupExportCaptions()
+        setupImportCaptions()
 
         arrayOf(
             binding.settingsColorCustomizationSectionLabel,
@@ -1108,6 +1126,84 @@ class SettingsActivity : SimpleActivity() {
         binding.settingsOcrHolder.setOnClickListener {
             val intent = Intent(this, OcrActivity::class.java)
             startActivity(intent)
+        }
+    }
+
+
+    // 导出captions表
+    private fun getExportCaptionsFilename(): String {
+        val appName = baseConfig.appId.removeSuffix(".debug").removeSuffix(".pro").removePrefix("org.fossify.")
+        return "$appName-favorites_${getCurrentFormattedDateTime()}"
+    }
+
+    /**
+     * 处理导出，用户选择了目录，写入 XML 文件
+     */
+    private fun handleCaptionsExport(folderUri: Uri) {
+        val fileName = getExportCaptionsFilename()
+
+        lifecycleScope.launch(Dispatchers.IO) {
+            val captions = captionDB.getAll()
+
+            // 创建文件也要在主线程，因为涉及到 ContentResolver
+            withContext(Dispatchers.Main) {
+                val folderDocUri = DocumentsContract.buildDocumentUriUsingTree(
+                    folderUri,
+                    DocumentsContract.getTreeDocumentId(folderUri)
+                )
+
+                val docUri = DocumentsContract.createDocument(
+                    contentResolver,
+                    folderDocUri,
+                    "text/xml",
+                    fileName
+                )
+
+                if (docUri == null) {
+                    Toast.makeText(this@SettingsActivity, "创建文件失败", Toast.LENGTH_SHORT).show()
+                    return@withContext
+                }
+
+                contentResolver.openOutputStream(docUri)?.use { outputStream ->
+                    CaptionXmlHandler.export(captions, outputStream)
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(this@SettingsActivity, "导出成功：$fileName", Toast.LENGTH_SHORT).show()
+                    }
+                } ?: withContext(Dispatchers.Main) {
+                    Toast.makeText(this@SettingsActivity, "打开文件流失败", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+    }
+
+    /**
+     * 处理导入，用户选择了 XML 文件，解析并保存进数据库
+     */
+    private fun handleCaptionsImport(fileUri: Uri) {
+        lifecycleScope.launch(Dispatchers.IO) {
+            contentResolver.openInputStream(fileUri)?.use { inputStream ->
+                val captions = CaptionXmlHandler.import(inputStream)
+                captionDB.insertAll(captions)
+
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(this@SettingsActivity, "导入成功，共 ${captions.size} 条记录", Toast.LENGTH_SHORT).show()
+                }
+            } ?: withContext(Dispatchers.Main) {
+                Toast.makeText(this@SettingsActivity, "导入失败", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    // 绑定监听器
+    private fun setupExportCaptions() {
+        binding.settingsExportCaptionsHolder.setOnClickListener {
+            exportCaptionsFolderLauncher.launch(null)
+        }
+    }
+
+    private fun setupImportCaptions() {
+        binding.settingsImportCaptionsHolder.setOnClickListener {
+            importCaptionsFileLauncher.launch(arrayOf("text/xml"))
         }
     }
 }
