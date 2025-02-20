@@ -15,16 +15,6 @@ This repository is a fork of [Gallery](https://github.com/FossifyOrg/Gallery), a
 - [ ] Implement more advanced query logic, such as support for logical operators like `AND` and `OR`.
 
 
-本仓库是[Gallery](https://github.com/FossifyOrg/Gallery)的分支版本，旨在通过由OCR模型和大语言模型构建起来的`Caption`来扩展图像搜索的边界。已完成和打算做的事如下：
-
-- [x] 建立`Captions`表，并在图像视图下提供对文件名和`Caption`内容的综合查询。
-- [x] 借助谷歌ML Kit的文字识别模块，离线为图库中的图像建立基于离线OCR模型的`Caption`，通过该实施完成对[#295](https://github.com/FossifyOrg/Gallery/issues/294)功能的添加。
-- [x] 实现在搜索结果中左右滑动的效果，修复[#347](https://github.com/FossifyOrg/Gallery/issues/347)。
-- [x] 完成对`Captions`表的导入和导出功能。
-- [ ] 借助OpenAI的API规范实施对在线或者局域网下的在线`Caption`生成。这将允许使用多模态大语言模型为图像生成语义丰富的`Caption`，或者使用PC端或者服务器端更强大的OCR模型为图像生成更准确的文本`Caption`。目前因为OpenAI尚未实施基于Kotlin的调用库[#70](https://github.com/openai/openai-java/issues/70)，暂缓该功能的实施。如果后续实施，预计可以部分满足[#19](https://github.com/FossifyOrg/Gallery/issues/19)，尽管我认为在手机上离线运行多模态大语言模型尚存在困难。
-- [ ] 对`captions`表的`content`字段使用[FTS5](https://www.sqlite.org/fts5.html)技术进行搜索加速。
-- [ ] 实现更加丰富地查询逻辑。比如`AND`和`OR`等逻辑运算符的支持。
-
 Unleash memories, not personal data. Fossify Gallery is the ultimate photo and video app that's as powerful as it is private. No ads, no unnecessary permissions – just a seamless experience tailored for you.
 
 **🖼️ PHOTO EDITING AT YOUR FINGERTIPS:**  
